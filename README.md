@@ -5,4 +5,4 @@ XY Export - shows XY coordinates of every layer
 
 
 ## Photoshop script
-Fixes opacity problem of layers, that stand on 0.5 pixel grind
+Fixes opacity problem of layers, that stand on 0.5 pixel grid
