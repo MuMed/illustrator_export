@@ -22,6 +22,7 @@ y = doc.selection[i].position[1]*(-1);
 out_txt += doc.layers[i].name + ";;;;x=" + x.toFixed(0) + ";;;;y=" + y.toFixed(0) + ";;;;" + i +"\n"; 
 } 
 
+//Create text frame in first layer on position 0,0
 t = doc.layers[0].textFrames.add();
         t.contents = out_txt;
  
