@@ -20,6 +20,7 @@ for ( var i = 0; i < count; ++i)
 {
 x = doc.selection[i].position[0]; 
 y = doc.selection[i].position[1]*(-1); 
+// Layer name, X, Y, layer number
 out_txt += doc.layers[i].name + ";;;;x=" + x.toFixed(0) + ";;;;y=" + y.toFixed(0) + ";;;;" + i +"\n"; 
 } 
 
