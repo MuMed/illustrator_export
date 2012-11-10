@@ -2,9 +2,7 @@ if (app.documents.length > 0)
 
 { 
 var doc = app.activeDocument;
-var x;
-var y;
-var t; 
+var x, y, t;
 app.coordinateSystem = CoordinateSystem.ARTBOARDCOORDINATESYSTEM; 
 var count = doc.layers.length; 
 var out_txt=""; 
