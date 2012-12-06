@@ -155,19 +155,74 @@ function exportBounds(doc, layer, i) {
 	+ "\t\t<key>" + layer.name + "_" + (i - 1) + "</key>\n"
 	+ "\t\t<dict>\n"
 	
-	////// Change to Type to Label if "L_"
-	if (layerNamePrefix == "L_")
+	/////// Define type as string
+	var type = "";
+	
+	////// Button
+	if ( layer.name.substring(0,3) == "Btn")
 	{
-		str2 +=
+		type = 
+		  "\t\t\t<key>Type</key>\n"
+		+ "\t\t\t<string>Button</string>\n"
+	}
+	
+	/////// RadioButton
+	else if ( layer.name.substring(0,4) == "RBtn")
+	{
+		type = 
+		  "\t\t\t<key>Type</key>\n"
+		+ "\t\t\t<string>RadioButton</string>\n"
+	}
+	
+	/////// Selector
+	else if ( layer.name.substring(0,2) == "S_")
+	{
+		type = 
+		  "\t\t\t<key>Type</key>\n"
+		+ "\t\t\t<string>Selector</string>\n"
+	}
+	
+	////// Slider
+	else if ( layer.name.substring(0,3) == "Sl_")
+	{
+		type = 
+		  "\t\t\t<key>Type</key>\n"
+		+ "\t\t\t<string>Slider</string>\n"
+	}
+	
+	////// ScrollView	
+	else if ( layer.name.substring(0,4) == "Scrl")
+	{
+		type = 
+		  "\t\t\t<key>Type</key>\n"
+		+ "\t\t\t<string>ScrollView</string>\n"
+	}
+	
+	////// Slot
+	else if ( layer.name.substring(0,4) == "Slot")
+	{
+		type = 
+		  "\t\t\t<key>Type</key>\n"
+		+ "\t\t\t<string>Slot</string>\n"
+	}
+	
+	////// Label
+	else if (layerNamePrefix == "L_")
+	{
+		type = 
 		  "\t\t\t<key>Type</key>\n"
 		+ "\t\t\t<string>Label</string>\n"
 	}
+	////// Picture as default
 	else
 	{
-		str2 +=
-		 "\t\t\t<key>Type</key>\n"
-		+ "\t\t\t<string>Picture</string>\n"
+	type = "\t\t\t<key>Type</key>\n"
+	+ "\t\t\t<string>Picture</string>\n"
 	}
+	
+	str2 += type;
+	
+	
 	////////////////////////////////////
 	
 	str2 +=
@@ -273,7 +328,7 @@ csvFile.writeln(str
 
 //Array instead of string
 + "\t\t<array>\n" 
-+ "\t\t\t" + app.activeDocument.name.match(/([^\.]+)/)[1]  + "\n" 
++ "\t\t\t<string>" + app.activeDocument.name.match(/([^\.]+)/)[1]  + "</string>\n" 
 + "\t\t</array>\n" 
 
 + "\t</dict>\n" 
