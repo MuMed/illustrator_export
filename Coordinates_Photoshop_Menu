@@ -69,7 +69,7 @@ function cLayer(doc, layer) {
 var invertY = docHeight;
 
 //this.layerID = Stdlib.getLayerID(doc, layer);
-  this.layerID = getLayerID(doc, layer);
+	this.layerID = getLayerID(doc, layer);
   //alert("layer ID: " + this.layerID);
 	this.layerWidth = layer.bounds[2].value - layer.bounds[0].value;
       this.layerHeight = layer.bounds[3].value - layer.bounds[1].value;
@@ -259,7 +259,7 @@ traverseLayers(app.activeDocument, exportBounds, true);
 // Use this to export XML file to same directory where PSD file is located
     var mySourceFilePath = activeDocument.fullName.path + "/";
 // create a reference to a file for output
-    var csvFile = new File(mySourceFilePath.toString().match(/([^\.]+)/)[1] + app.activeDocument.name.match(/([^\.]+)/)[1] + "_coord" + ".plist");
+    var csvFile = new File(mySourceFilePath.toString().match(/([^\.]+)/)[1] + app.activeDocument.name.match(/([^\.]+)/)[1] + ".plist");
 // open the file, write the data, then close the file
 csvFile.open('w');
 
@@ -284,4 +284,4 @@ csvFile.writeln(str
 csvFile.close();
 preferences.rulerUnits = originalRulerUnits;
 // Confirm that operation has completed
-alert("Operation Complete!" + "\n" + "Layer coordinates were successfully exported to:" + "\n" + "\n" + mySourceFilePath.toString().match(/([^\.]+)/)[1] + "v_" + app.activeDocument.name.match(/([^\.]+)/)[1] + "_coord" + ".plist");
+alert("Operation Complete!" + "\n" + "Layer coordinates were successfully exported to:" + "\n" + "\n" + mySourceFilePath.toString().match(/([^\.]+)/)[1] + "c_" + app.activeDocument.name.match(/([^\.]+)/)[1] + ".plist");
