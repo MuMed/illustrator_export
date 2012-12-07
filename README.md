@@ -9,3 +9,6 @@ Coodinates - Gets 9 coordinates of each layer. Creates PLIST. Changes TYPE of co
 ## Photoshop action
 AlphaUnity - Fixes opacity problem of layers, that stand on 0.5 pixel grid
 
+## Zwoptex
+Formater - dublicates the format for cocos2d of Texture Packer to Zwoptex, so you never have to worry again
+
