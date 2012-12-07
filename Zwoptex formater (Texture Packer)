@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>frames</key>
+	<dict>
+		{% for sprite in sprites %}
+		<key>{{ sprite.name }}</key>
+		<dict>
+			<key>sourceColorRect</key>
+			<string>{{ sprite.sourceColorRect }}</string>
+			<key>offset</key>
+			<string>{{ sprite.offset }}</string>
+			<key>sourceSize</key>
+			<string>{{ sprite.size }}</string>
+			<key>frame</key>
+			<string>{ { {{ sprite.textureRectX}}, {{sprite.textureRectY}} },{{ sprite.size }} }</string>
+			<key>rotated</key>
+			{% if sprite.isRotated %}<true/>{% else %}<false/>{% /if %}
+		</dict>
+		{% /for %}
+	</dict>
+	<key>metadata</key>
+	<dict>
+		<key>version</key>
+		<string>{{ metadata.version }}</string>
+		<key>format</key>
+		<integer>2</integer>
+		<key>textureFileName</key>
+		<string>{{ metadata.target.textureFileName }}</string>
+		<key>realTextureFileName</key>
+		<string>{{ metadata.target.textureFileName }}</string>
+			
+		<key>size</key>
+		<string>{{ metadata.size }}</string>
+	</dict>
+</dict>
+</plist>
