@@ -124,11 +124,11 @@ var invertY = docHeight;
       this.relMiddleCenterX = this.layerWidth / 2;
       this.relMiddleCenterY = this.layerHeight / 2;
       this.relMiddleRightX = this.layerWidth;
-	this.relMiddleRightY = this.layerHeight / 2;
+      this.relMiddleRightY = this.layerHeight / 2;
       this.relLowerLeftX = layer.bounds[1].value - layer.bounds[1].value;
       this.relLowerLeftY = this.layerHeight;
       this.relLowerCenterX = this.layerWidth / 2;
-	this.relLowerCenterY = this.layerHeight / 2;
+      this.relLowerCenterY = this.layerHeight / 2;
       this.relLowerRightY = this.layerHeight;
       this.relLowerRightX = this.layerWidth;
       this.relLowerRightY = this.layerHeight;
@@ -242,6 +242,13 @@ function exportBounds(doc, layer, i) {
 	}
 	////////////////////////////////
 	
+	//////// Add Button Pressed to ClipName
+	if ( layer.name.substring(0,3) == "Btn")
+	{
+		str2 += "\t\t\t\t<string>" + layer.name + "Pressed" + ".png" +"</string>\n"
+	}
+
+
 	str2 +=
 	 "\t\t\t</array>\n"
 	
