@@ -101,15 +101,15 @@ var invertY = docHeight;
 	  //		1	2	3
 	  //
 	  this.leftBottom = this.lowerLeftX + ", " + this.lowerLeftY;
-	  this.bottomCenter = this.lowerCenterX + ", " + this.lowerCenterY;
+	  this.bottomCenter = this.lowerCenterX + "," + (invertY - this.lowerCenterY);
 	  this.rightBottom = this.lowerRightX + ", " + this.lowerRightY;
 	  
-	  this.leftCenter = this.middleLeftX + ", " + this.middleLeftY;
+	  this.leftCenter = this.middleLeftX + "," + this.middleLeftY;
 	  this.center = this.middleCenterX + "," + (invertY - this.middleCenterY);
-	  this.rightCenter = this.middleRightX + ", " + this.middleRightY;
+	  this.rightCenter = this.middleRightX + "," + this.middleRightY;
 	  
 	  this.leftTop = this.upperLeftX +  ", " + this.upperLeftY;
-	  this.topCenter = this.upperCenterX + ", " + this.upperCenterY;
+	  this.topCenter = this.upperCenterX + "," + (invertY - this.upperCenterY);
 	  this.rightTop = this.upperRightX + ", " + this.upperRightY;
 
 	// these return object coordinates relative to layer bounds
@@ -124,11 +124,11 @@ var invertY = docHeight;
       this.relMiddleCenterX = this.layerWidth / 2;
       this.relMiddleCenterY = this.layerHeight / 2;
       this.relMiddleRightX = this.layerWidth;
-      this.relMiddleRightY = this.layerHeight / 2;
+	this.relMiddleRightY = this.layerHeight / 2;
       this.relLowerLeftX = layer.bounds[1].value - layer.bounds[1].value;
       this.relLowerLeftY = this.layerHeight;
       this.relLowerCenterX = this.layerWidth / 2;
-      this.relLowerCenterY = this.layerHeight / 2;
+	this.relLowerCenterY = this.layerHeight / 2;
       this.relLowerRightY = this.layerHeight;
       this.relLowerRightX = this.layerWidth;
       this.relLowerRightY = this.layerHeight;
@@ -213,6 +213,7 @@ function exportBounds(doc, layer, i) {
 		  "\t\t\t<key>Type</key>\n"
 		+ "\t\t\t<string>Label</string>\n"
 	}
+	
 	////// Picture as default
 	else
 	{
@@ -233,7 +234,7 @@ function exportBounds(doc, layer, i) {
 	if (layerNamePrefix == "L_")
 	{
 	str2 +=
-	 "\t\t\t\t<string>AGENTORANGE.TTF</string>\n"
+	 "\t\t\t\t<string>Agent Orange</string>\n"
 	}
 	else
 	{
@@ -247,29 +248,10 @@ function exportBounds(doc, layer, i) {
 	{
 		str2 += "\t\t\t\t<string>" + layer.name + "Pressed" + ".png" +"</string>\n"
 	}
-
-
+	
 	str2 +=
 	 "\t\t\t</array>\n"
-	
-
-	////// Text Block
-	if ( layerNamePrefix == "L_") 
-	{
-	str2 += 
-	  "\t\t\t<key>Text</key>\n"
-	+ "\t\t\t<string>Any Text</string>\n"
-	+ "\t\t\t<key>TextSize</key>\n"
-	+ "\t\t\t<string>20</string>\n"
-	+ "\t\t\t<key>TextColor</key>\n"
-	+ "\t\t\t<string>#000000</string>\n"
-	+ "\t\t\t<key>TextAlignment</key>\n"
-	+ "\t\t\t<string>Center</string>\n"
-	} 	
-	//////////////////////////
-		
-	str2 +=
-	  "\t\t\t<key>Position</key>\n"
+	+ "\t\t\t<key>Position</key>\n"
 	+ "\t\t\t<string>{" + center + "}</string>\n"
 	+ "\t\t\t<key>Sizes</key>\n"
 	+ "\t\t\t<string>{" + layerData.layerWidth + ","+ layerData.layerHeight + "}</string>\n"  
@@ -287,6 +269,89 @@ function exportBounds(doc, layer, i) {
 	+ "\t\t\t<string>functionName</string>\n"
 	+ "\t\t\t<key>Value</key>\n"
 	+ "\t\t\t<string>functionValue</string>\n"
+	
+	////// Special 
+	+ "\t\t\t<key>Special</key>\n"
+	+ "\t\t\t<dict>\n"
+	
+	////// Text Block
+	if ( layerNamePrefix == "L_") 
+	{
+	str2 += 
+	  "\t\t\t\t<key>Text</key>\n"
+	+ "\t\t\t\t<string>Any Text</string>\n"
+	+ "\t\t\t\t<key>TextSize</key>\n"
+	+ "\t\t\t\t<string>20</string>\n"
+	+ "\t\t\t\t<key>TextColor</key>\n"
+	+ "\t\t\t\t<string>#000000</string>\n"
+	+ "\t\t\t\t<key>TextAlignment</key>\n"
+	+ "\t\t\t\t<string>Center</string>\n"
+	} 	
+	//////////////////////////
+	
+	
+	//////// Scroll View Block
+	
+	if ( layer.name.substring(0,4) == "Scrl") 
+	{
+	str2 += 
+	  "\t\t\t\t<key>NumWindows</key>\n"
+	+ "\t\t\t\t<string>1</string>\n"
+	+ "\t\t\t\t<key>Picker</key>\n"
+	+ "\t\t\t\t<string>NO</string>\n"
+	+ "\t\t\t\t<key>SlideSensivity</key>\n"
+	+ "\t\t\t\t<string>{1.0,0.0}</string>\n"
+	+ "\t\t\t\t<key>SlidePercent</key>\n"
+	+ "\t\t\t\t<string>35.0</string>\n"
+	+ "\t\t\t\t<key>SlideTime</key>\n"
+	+ "\t\t\t\t<string>0.5</string>\n"
+	} 		
+	
+	//////////////////////////
+	
+	//////// Slider Block
+	
+	if ( layer.name.substring(0,3) == "Sl_") 
+	{
+		if ( layerData.layerHeight > layerData.layerWidth )
+		{
+			str2 += 
+			  "\t\t\t\t<key>Direction</key>\n"
+			+ "\t\t\t\t<string>Vertical</string>\n"
+			+ "\t\t\t\t<key>MinPos</key>\n"
+			+ "\t\t\t\t<string>{" + bottomCenter + "}</string>\n"
+			+ "\t\t\t\t<key>MaxPos</key>\n"
+			+ "\t\t\t\t<string>{" + topCenter + "}</string>\n"
+			+ "\t\t\t\t<key>StripeHeight</key>\n"
+			+ "\t\t\t\t<string>{" + layerData.layerWidth +"}</string>\n"
+			+ "\t\t\t\t<key>ScrollBar</key>\n"
+			+ "\t\t\t\t<string>Yes</string>\n"
+			+ "\t\t\t\t<key>Touchable</key>\n"
+			+ "\t\t\t\t<string>NO</string>\n"
+		}
+		
+		else
+		{
+			str2 += 
+			  "\t\t\t\t<key>Direction</key>\n"
+			+ "\t\t\t\t<string>Horizontal</string>\n"
+			+ "\t\t\t\t<key>MinPos</key>\n"
+			+ "\t\t\t\t<string>{" + leftCenter + "}</string>\n"
+			+ "\t\t\t\t<key>MaxPos</key>\n"
+			+ "\t\t\t\t<string>{" + rightCenter + "}</string>\n"
+			+ "\t\t\t\t<key>StripeHeight</key>\n"
+			+ "\t\t\t\t<string>{" + layerData.layerHeight +"}</string>\n"
+			+ "\t\t\t\t<key>ScrollBar</key>\n"
+			+ "\t\t\t\t<string>Yes</string>\n"
+			+ "\t\t\t\t<key>Touchable</key>\n"
+			+ "\t\t\t\t<string>NO</string>\n"		
+		}
+	}
+
+	//////////////////////////
+	
+	str2 +=
+	"\t\t\t</dict>\n"
 	
 	+ "\t\t\t<key>Childs</key>\n"
 	+ "\t\t\t<dict>\n"
@@ -326,7 +391,7 @@ traverseLayers(app.activeDocument, exportBounds, true);
 csvFile.open('w');
 
 csvFile.writeln(str 
-+ "\t</dict>\n" 
++ "\t</dict>\n\n" 
 + "\t<key>metadata</key>\t\n" 
 + "\t<dict>\n" 
 + "\t\t<key>Version</key>\n" 
