@@ -27,6 +27,15 @@ y = docHeight - (doc.selection[i].position[1]*(-1)) - (doc.selection[i].height /
 w = doc.selection[i].width;
 h = doc.selection[i].height;
 
+botCenterX = x;
+botCenterY = docHeight + (((doc.selection[i].position[1]*(-1)) + (doc.selection[i].height))*(-1)); 
+topCenterX = x;
+topCenterY = docHeight + (((doc.selection[i].position[1]*(-1)); 
+leftCenterX = doc.selection[i].position[0];
+leftCenterY = y;
+rightCenterX = doc.selection[i].position[0] + doc.selection[i].width;
+rightCenterY = y;
+
 //Delete symbol # as layer prefix
 layerName = doc.layers[i].name;
 layerName = layerName.replace("#","");
@@ -43,7 +52,7 @@ out_txt += "\n"
 + "\t\t<key>" + layerName + "_" + i + "</key>\n" 
 + "\t\t<dict>\n" 
 
-    /////// Define TYPE as string
+	/////// Define TYPE as string
 	var type = "";
 	
 	////// Button
@@ -200,9 +209,9 @@ out_txt += "\n"
 			  "\t\t\t\t<key>Direction</key>\n"
 			+ "\t\t\t\t<string>Vertical</string>\n"
 			+ "\t\t\t\t<key>MinPos</key>\n"
-			+ "\t\t\t\t<string>{" + bottomCenter + "}</string>\n"
+			+ "\t\t\t\t<string>{" + botCenterX + "," + botCenterY + "}</string>\n"
 			+ "\t\t\t\t<key>MaxPos</key>\n"
-			+ "\t\t\t\t<string>{" + topCenter + "}</string>\n"
+			+ "\t\t\t\t<string>{" + topCenterX + "," + topCenterY + "}</string>\n"
 			+ "\t\t\t\t<key>StripeHeight</key>\n"
 			+ "\t\t\t\t<string>{" + w +"}</string>\n"
 			+ "\t\t\t\t<key>ScrollBar</key>\n"
@@ -217,9 +226,9 @@ out_txt += "\n"
 			  "\t\t\t\t<key>Direction</key>\n"
 			+ "\t\t\t\t<string>Horizontal</string>\n"
 			+ "\t\t\t\t<key>MinPos</key>\n"
-			+ "\t\t\t\t<string>{" + leftCenter + "}</string>\n"
+			+ "\t\t\t\t<string>{" + leftCenterX + "," + leftCenterY + "}</string>\n"
 			+ "\t\t\t\t<key>MaxPos</key>\n"
-			+ "\t\t\t\t<string>{" + rightCenter + "}</string>\n"
+			+ "\t\t\t\t<string>{" + rightCenterX + "," + rightCenterY + "}</string>\n"
 			+ "\t\t\t\t<key>StripeHeight</key>\n"
 			+ "\t\t\t\t<string>{" + h +"}</string>\n"
 			+ "\t\t\t\t<key>ScrollBar</key>\n"
