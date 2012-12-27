@@ -152,7 +152,9 @@ function exportBounds(doc, layer, i) {
 // Layer object main coordinates relative to its active pixels
     var str2 = "\n"
 	
-	+ "\t\t<key>" + layer.name + "_" + (i - 1) + "</key>\n"
+	str2 +=
+	
+	  "\t\t<key>" + layer.name + "_" + (i - 1) + "</key>\n"
 	+ "\t\t<dict>\n"
 	
 	/////// Define type as string
@@ -225,6 +227,9 @@ function exportBounds(doc, layer, i) {
 	
 	
 	////////////////////////////////////
+	str2 +=
+	  "\t\t\t<key>ID</key>\n"
+	+ "\t\t\t<string>0</string>\n"
 	
 	str2 +=
 	 "\t\t\t<key>ClipNames</key>\n"
@@ -279,7 +284,7 @@ function exportBounds(doc, layer, i) {
 	{
 	str2 += 
 	  "\t\t\t\t<key>Text</key>\n"
-	+ "\t\t\t\t<string>Any Text</string>\n"
+	+ "\t\t\t\t<string>" + layer.textItem.contents + "</string>\n"
 	+ "\t\t\t\t<key>TextSize</key>\n"
 	+ "\t\t\t\t<string>20</string>\n"
 	+ "\t\t\t\t<key>TextColor</key>\n"
