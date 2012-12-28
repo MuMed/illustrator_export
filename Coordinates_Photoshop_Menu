@@ -152,9 +152,7 @@ function exportBounds(doc, layer, i) {
 // Layer object main coordinates relative to its active pixels
     var str2 = "\n"
 	
-	str2 +=
-	
-	  "\t\t<key>" + layer.name + "_" + (i - 1) + "</key>\n"
+	+ "\t\t<key>" + layer.name + "_" + (i - 1) + "</key>\n"
 	+ "\t\t<dict>\n"
 	
 	/////// Define type as string
@@ -239,7 +237,7 @@ function exportBounds(doc, layer, i) {
 	if (layerNamePrefix == "L_")
 	{
 	str2 +=
-	 "\t\t\t\t<string>Agent Orange</string>\n"
+	 "\t\t\t\t<string>" + layer.textItem.font + "</string>\n"
 	}
 	else
 	{
@@ -282,13 +280,15 @@ function exportBounds(doc, layer, i) {
 	////// Text Block
 	if ( layerNamePrefix == "L_") 
 	{
+	var textSize = "";
+	textSize += layer.textItem.size;
 	str2 += 
 	  "\t\t\t\t<key>Text</key>\n"
 	+ "\t\t\t\t<string>" + layer.textItem.contents + "</string>\n"
 	+ "\t\t\t\t<key>TextSize</key>\n"
-	+ "\t\t\t\t<string>20</string>\n"
+	+ "\t\t\t\t<string>" + textSize.substring(0,textSize.length-3) + "</string>\n"
 	+ "\t\t\t\t<key>TextColor</key>\n"
-	+ "\t\t\t\t<string>#000000</string>\n"
+	+ "\t\t\t\t<string>#" + layer.textItem.color.rgb.hexValue + "</string>\n"
 	+ "\t\t\t\t<key>TextAlignment</key>\n"
 	+ "\t\t\t\t<string>Center</string>\n"
 	} 	
