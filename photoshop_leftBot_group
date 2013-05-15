@@ -1,0 +1,435 @@
+// Экспорт параметры слоев PSD в PLIST
+
+if (app.documents.length > 0) {
+  //Инициализация
+	var originalRulerUnits = app.preferences.rulerUnits;
+	app.preferences.rulerUnits = Units.PIXELS;
+	var docRef = activeDocument; //Обрабатываемый документ
+	var docWidth = docRef.width.value;	//Временно
+	var docHeight = docRef.height.value;//Временно 
+	var mySourceFilePath = activeDocument.fullName.path + "/";
+
+	var str = ""; //Строка вывода
+	var stackorder = -1; //Уникальный номер объекта
+	var TempStr1 = ""; //Теги до childs
+	var TempStr2 = ""; //Теги после childs
+
+	//Вызов обработчика
+	var savedState1 = app.activeDocument.activeHistoryState;
+	ExportLayersRecurcy(docRef);
+
+	//Экспорт результата
+	// Use this to export XML file to same directory where PSD file is located
+	var mySourceFilePath = activeDocument.fullName.path + "/";
+	// create a reference to a file for output
+	var csvFile = new File(mySourceFilePath.toString().match(/([^\.]+)/)[1] + app.activeDocument.name.match(/([^\.]+)/)[1] + ".plist");
+	// open the file, write the data, then close the file
+	csvFile.open('w');
+	csvFile.writeln(
+		// add header line
+		str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<!DOCTYPE plist PUBLIC \"-\//Apple Computer\//DTD PLIST 1.0\//EN\" \"http:\//www.apple.com\/DTDs\/PropertyList-1.0.dtd\">\n"
+			 + "<plist version=\"1.0\">\n<dict>\n\t<key>frames</key>\n\t<dict>\n"
+			 + str
+			 + "\t</dict>\n\n"
+			 + "\t<key>metadata</key>\t\n"
+			 + "\t<dict>\n"
+			 + "\t\t<key>Version</key>\n"
+			 + "\t\t<string>1.0</string>\n"
+			 + "\t\t<key>atlasFileName</key>\n"
+			//Array instead of string
+			 + "\t\t<array>\n"
+			 + "\t\t\t<string>" + app.activeDocument.name.match(/([^\.]+)/)[1] + "</string>\n"
+			 + "\t\t</array>\n"
+			 + "\t</dict>\n"
+			 + "</dict>\n"
+			 + "</plist>");
+	csvFile.close();
+
+	app.preferences.rulerUnits = originalRulerUnits;
+	app.activeDocument.activeHistoryState = savedState1;
+	// Confirm that operation has completed
+	alert("Operation Complete!" + "\n" + "Layer coordinates were successfully exported to:" + "\n" + "\n" +
+		mySourceFilePath.toString().match(/([^\.]+)/)[1] + "c_" + app.activeDocument.name.match(/([^\.]+)/)[1] + ".plist");
+} else {
+	alert('There are no documents open.');
+	// quit
+}
+
+// now a function to collect the data
+function exportBounds(GroupLayer, CurLayer) {
+    var CurLayername = CurLayer.name.replace("Main_","");
+    
+	TempStr1 = "";
+	TempStr2 = "";
+	stackorder ++;
+	var layerData = cLayer(GroupLayer, CurLayer);	//Запрос параметров слоя
+
+	// Check if layer name starts from prefix
+	var layerNamePrefix = CurLayername.substring(0, 2);
+	// Layer object main coordinates relative to its active pixels
+	TempStr1 = "\n\t\t<key>" + CurLayername + "_" + stackorder + "</key>\n"
+		     + "\t\t<dict>\n"
+
+	// Define type as string
+	var type = "";
+	////// Button
+	if (CurLayername.substring(0, 3) == "Btn") {
+		type = "\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>Button</string>\n";
+	}
+	/////// RadioButton
+	else if (CurLayername.substring(0, 4) == "RBtn") {
+		type ="\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>RadioButton</string>\n"
+	}
+	/////// Selector
+	else if (CurLayername.substring(0, 2) == "S_") {
+		type ="\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>Selector</string>\n"
+	}
+	////// Slider
+	else if (CurLayername.substring(0, 3) == "Sl_") {
+		type ="\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>Slider</string>\n"
+	}
+	////// ScrollView
+	else if (CurLayername.substring(0, 4) == "Scrl") {
+		type ="\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>ScrollView</string>\n"
+	}
+	////// Slot
+	else if (CurLayername.substring(0, 4) == "Slot") {
+		type ="\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>Slot</string>\n"
+	}
+	////// Label
+	else if (layerNamePrefix == "L_") {
+		type ="\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>Label</string>\n"
+	}
+	////// Picture as default
+	else {type = "\t\t\t<key>Type</key>\n"
+			 + "\t\t\t<string>Picture</string>\n"
+	}
+	TempStr1 += type;
+
+	//////////////////////////////////// ID functions
+	TempStr1 +=	"\t\t\t<key>ID</key>\n"
+	//ID
+	if (CurLayername.substring(0, 14) == "BtnLevelSelect") {
+		TempStr1 += "\t\t\t<string>BTN_LEVEL_SELECT</string>\n"
+	} else if (CurLayername.substring(0, 10) == "BtnSubview") {
+		TempStr1 += "\t\t\t<string>BTN_SUBVIEW</string>\n"
+	} else if (CurLayername.substring(0, 7) == "BtnSkip") {
+		TempStr1 += "\t\t\t<string>BTN_SKIP</string>\n"
+	} else if (CurLayername.substring(0, 9) == "BtnReplay") {
+		TempStr1 += "\t\t\t<string>BTN_RESTART</string>\n"
+	} else if (CurLayername.substring(0, 7) == "BtnBack") {
+		TempStr1 += "\t\t\t<string>BTN_BACK</string>\n"
+	} else if (CurLayername.substring(0, 7) == "BtnMenu") {
+		TempStr1 += "\t\t\t<string>BTN_BACK</string>\n"
+	} else if (CurLayername.substring(0, 8) == "BtnStart") {
+		TempStr1 += "\t\t\t<string>BTN_PLAY</string>\n"
+	} else if (CurLayername.substring(0, 13) == "BtnCreateGame") {
+		TempStr1 += "\t\t\t<string>BTN_SUBVIEW</string>\n"
+	} else if (CurLayername.substring(0, 13) == "BtnCreateMenu") {
+		TempStr1 += "\t\t\t<string>BTN_SUBVIEW</string>\n"
+	} else if (CurLayername.substring(0, 14) == "BtnConnectMenu") {
+		TempStr1 += "\t\t\t<string>BTN_SUBVIEW</string>\n"
+	} else if (CurLayername.substring(0, 10) == "BtnOptions") {
+		TempStr1 += "\t\t\t<string>BTN_OPTION</string>\n"
+	} else if (CurLayername.substring(0, 10) == "BtnRestart") {
+		TempStr1 += "\t\t\t<string>BTN_RESTART</string>\n"
+	} else if (CurLayername.substring(0, 11) == "BtnContinue") {
+		TempStr1 += "\t\t\t<string>BTN_CONTINUE</string>\n"
+	} else if (CurLayername.substring(0, 8) == "BtnPause") {
+		TempStr1 += "\t\t\t<string>BTN_PAUSE</string>\n"
+	} else if (CurLayername.substring(0, 11) == "BtnFacebook") {
+		TempStr1 += "\t\t\t<string>BTN_FACEBOOK</string>\n"
+	} else if (CurLayername.substring(0, 10) == "BtnCrystal") {
+		TempStr1 += "\t\t\t<string>BTN_CRYSTAL</string>\n"
+	} else if (CurLayername.substring(0, 10) == "BtnTwitter") {
+		TempStr1 += "\t\t\t<string>BTN_TWITTER</string>\n"
+	} else if (CurLayername.substring(0, 8) == "BtnMusic") {
+		TempStr1 += "\t\t\t<string>BTN_MUSIC</string>\n"
+	} else if (CurLayername.substring(0, 8) == "BtnSound") {
+		TempStr1 += "\t\t\t<string>BTN_SOUNDFX</string>\n"
+	} else {
+		TempStr1 += "\t\t\t<string>0</string>\n"
+	}
+	TempStr1 +=	"\t\t\t<key>ClipNames</key>\n"
+	          + "\t\t\t<array>\n"
+
+	///////////////// Apply Font Name
+	if (layerNamePrefix == "L_") {
+		TempStr1 += "\t\t\t\t<string>" +CurLayer.textItem.font + "</string>\n"
+	} else {
+		TempStr1 +=	"\t\t\t\t<string>" + CurLayername + ".png" + "</string>\n"
+	}
+
+	////////////////////////////////
+	//////// Add Button Pressed to ClipName
+	if (CurLayername.substring(0, 3) == "Btn") {
+		//TempStr1 += "\t\t\t\t<string>" + CurLayername + "Pressed" + ".png" + "</string>\n"
+	}
+	TempStr1 += "\t\t\t</array>\n"
+	 + "\t\t\t<key>Position</key>\n"
+	 + "\t\t\t<string>{" + layerData.center + "}</string>\n"
+	 + "\t\t\t<key>Sizes</key>\n"
+	 + "\t\t\t<string>{" + layerData.layerWidth + "," + layerData.layerHeight + "}</string>\n"
+	 + "\t\t\t<key>Scale</key>\n"
+	 + "\t\t\t<string>{1.0,1.0}</string>\n"
+	 + "\t\t\t<key>Rotation</key>\n"
+	 + "\t\t\t<string>0</string>\n"
+	 + "\t\t\t<key>zOrder</key>\n"
+	 + "\t\t\t<string>" + stackorder + "</string>\n"
+	 + "\t\t\t<key>TransformCenter</key>\n"
+	 + "\t\t\t<string>{0.5,0.5}</string>\n"
+
+	// Event and Value added
+	// Function Value Adding
+	 + "\t\t\t<key>Event</key>\n"
+
+	///////Level Select
+	if (CurLayername.substring(0, 10) == "BtnSubview") {
+		TempStr1 += "\t\t\t<string>BTN_SUBVIEW</string>\n"
+	} else {
+		TempStr1 += "\t\t\t<string>0</string>\n"
+	}
+
+	/////// Value
+	TempStr1 += "\t\t\t<key>Value</key>\n"
+	if (CurLayername.substring(0, 10) == "BtnSubview") {
+		TempStr1 += "\t\t\t<string>" + CurLayername.substring(10) + "</string>\n"
+	} else {
+		TempStr1 += "\t\t\t<string>0</string>\n"
+	}
+
+	////// Special
+	TempStr1 += "\t\t\t<key>Special</key>\n"
+	 + "\t\t\t<dict>\n"
+
+	////// Text Block
+	if (layerNamePrefix == "L_") {
+		var textSize = "";
+		textSize += CurLayer.textItem.size;
+		TempStr1 +=
+		"\t\t\t\t<key>Text</key>\n"
+		 + "\t\t\t\t<string>" + CurLayer.textItem.contents + "</string>\n"
+		 //+ "\t\t\t\t<key>FontName</key>\n"
+		 //+ "\t\t\t\t<string>" + CurLayer.textItem.font + "</string>\n"
+		 + "\t\t\t\t<key>TextSize</key>\n"
+		 + "\t\t\t\t<string>" + textSize.substring(0, textSize.length - 3) + "</string>\n"
+		 + "\t\t\t\t<key>TextColor</key>\n"
+		 + "\t\t\t\t<string>#000000</string>\n"
+		 + "\t\t\t\t<key>TextAlignment</key>\n"
+		 + "\t\t\t\t<string>Center</string>\n"
+		 + "\t\t\t\t<key>Dynamic</key>\n"
+		 + "\t\t\t\t<string>0</string>\n"
+	}
+	//////////////////////////
+	//////// Scroll View Block
+	if (CurLayername.substring(0, 4) == "Scrl") {
+		TempStr1 +=
+		"\t\t\t\t<key>NumWindows</key>\n"
+		 + "\t\t\t\t<string>1</string>\n"
+		 + "\t\t\t\t<key>Picker</key>\n"
+		 + "\t\t\t\t<string>NO</string>\n"
+		 + "\t\t\t\t<key>SlideSensivity</key>\n"
+		 + "\t\t\t\t<string>{1.0,0.0}</string>\n"
+		 + "\t\t\t\t<key>SlidePercent</key>\n"
+		 + "\t\t\t\t<string>35.0</string>\n"
+		 + "\t\t\t\t<key>SlideTime</key>\n"
+		 + "\t\t\t\t<string>0.5</string>\n"
+	}
+
+	//////////////////////////
+	//////// Slider Block
+	if (CurLayername.substring(0, 3) == "Sl_") {
+		if (layerData.layerHeight > layerData.layerWidth) {
+			TempStr1 +=
+			"\t\t\t\t<key>Direction</key>\n"
+			 + "\t\t\t\t<string>Vertical</string>\n"
+			 + "\t\t\t\t<key>MinPos</key>\n"
+			 + "\t\t\t\t<string>{" + layerData.bottomCenter + "}</string>\n"
+			 + "\t\t\t\t<key>MaxPos</key>\n"
+			 + "\t\t\t\t<string>{" + layerData.topCenter + "}</string>\n"
+			 + "\t\t\t\t<key>StripeHeight</key>\n"
+			 + "\t\t\t\t<string>{" + layerData.layerWidth + "}</string>\n"
+			 + "\t\t\t\t<key>ScrollBar</key>\n"
+			 + "\t\t\t\t<string>Yes</string>\n"
+			 + "\t\t\t\t<key>Touchable</key>\n"
+			 + "\t\t\t\t<string>NO</string>\n"
+		} else {
+			TempStr1 +=
+			"\t\t\t\t<key>Direction</key>\n"
+			 + "\t\t\t\t<string>Horizontal</string>\n"
+			 + "\t\t\t\t<key>MinPos</key>\n"
+			 + "\t\t\t\t<string>{" + layerData.leftCenter + "}</string>\n"
+			 + "\t\t\t\t<key>MaxPos</key>\n"
+			 + "\t\t\t\t<string>{" + layerData.rightCenter + "}</string>\n"
+			 + "\t\t\t\t<key>StripeHeight</key>\n"
+			 + "\t\t\t\t<string>{" + layerData.layerHeight + "}</string>\n"
+			 + "\t\t\t\t<key>ScrollBar</key>\n"
+			 + "\t\t\t\t<string>Yes</string>\n"
+			 + "\t\t\t\t<key>Touchable</key>\n"
+			 + "\t\t\t\t<string>NO</string>\n"
+		}
+	}
+
+	//////////////////////////
+	TempStr1 +=
+	"\t\t\t</dict>\n"
+	 + "\t\t\t<key>Childs</key>\n"
+	 + "\t\t\t<dict>\n";
+	TempStr2 =
+		"\t\t\t</dict>\n"
+		 + "\t\t\t<key>Animation</key>\n"
+		 + "\t\t\t<dict>\n"
+		 + "\t\t\t\t<key>Moving</key>\n"
+		 + "\t\t\t\t<string>{0.0,0.0}</string>\n"
+		 + "\t\t\t\t<key>Jumping</key>\n"
+		 + "\t\t\t\t<string>0</string>\n"
+
+		// Pulse Added
+		 + "\t\t\t\t<key>PulseInterval</key>\n"
+		 + "\t\t\t\t<string>0</string>\n"
+
+		 + "\t\t\t</dict>\n"
+		 + "\t\t</dict>\n\n";
+};
+
+//Получить параметры слоя
+function cLayer(Group, CurLayer) {
+	var invertY = docHeight;
+
+	this.layerWidth = CurLayer.bounds[2].value - CurLayer.bounds[0].value;
+	this.layerHeight = CurLayer.bounds[3].value - CurLayer.bounds[1].value;
+
+	// these return object coordinates relative to canvas
+	this.upperLeftX = CurLayer.bounds[0].value;
+	this.upperLeftY = CurLayer.bounds[1].value;
+	this.upperRightX = CurLayer.bounds[2].value;
+	this.upperRightY = CurLayer.bounds[1].value;
+
+    // Найти основной элемент группы
+    if (Group != docRef) {
+        for (var i = Group.layers.length - 1; i >= 0; i--) {
+            var MainLayer = Group.layers[i];
+            if (MainLayer.name.substring(0, 5) == "Main_") {
+                var Top = MainLayer.bounds[3].value;
+                var Left = MainLayer.bounds[0].value;
+            }
+        }
+    } else {
+        var Top = Group.height.value;
+        var Left = 0;
+    }
+    this.middleCenterX = (this.layerWidth / 2 + CurLayer.bounds[0].value) - Left;
+    this.middleCenterY = (-1) * ((this.layerHeight / 2 + CurLayer.bounds[1].value) - Top);
+	// *
+	this.lowerLeftX = CurLayer.bounds[0].value;
+	this.lowerLeftY = CurLayer.bounds[3].value;
+	// ***
+	this.lowerCenterX = this.layerWidth / 2 + CurLayer.bounds[0].value;
+	this.lowerCenterY = CurLayer.bounds[3].value;
+	this.upperCenterX = this.layerWidth / 2 + CurLayer.bounds[0].value;
+	this.upperCenterY = CurLayer.bounds[1].value;
+	this.middleLeftX = CurLayer.bounds[0].value;
+	this.middleLeftY = this.layerHeight / 2 + CurLayer.bounds[1].value;
+	this.middleRightX = CurLayer.bounds[2].value;
+	this.middleRightY = this.layerHeight / 2 + CurLayer.bounds[1].value;
+	// ***
+	this.lowerRightX = CurLayer.bounds[2].value;
+	this.lowerRightY = CurLayer.bounds[3].value;
+
+	// I'm adding these for easier editing of flash symbol transformation point (outputs a 'x, y' format)
+	// because I like to assign shortcut keys that use the numeric pad keyboard, like such:
+	//		7	8	9
+	//		4	5	6
+	//		1	2	3
+	//
+	this.leftBottom = this.lowerLeftX + ", " + this.lowerLeftY;
+	// ***
+	this.bottomCenter = this.lowerCenterX + ", " + this.lowerCenterY;
+	this.topCenter = this.upperCenterX + ", " + this.upperCenterY;
+	this.leftCenter = this.middleLeftX + ", " + this.middleLeftY;
+	this.rightCenter = this.middleRightX + ", " + this.middleRightY;
+	// ***
+
+	this.rightBottom = this.lowerRightX + ", " + this.lowerRightY;
+	// Центр относительно группы
+	this.center = this.middleCenterX + "," + this.middleCenterY;
+
+	this.leftTop = this.upperLeftX + ", " + this.upperLeftY;
+	this.rightTop = this.upperRightX + ", " + this.upperRightY;
+
+	// these return object coordinates relative to layer bounds
+	this.relUpperLeftX = CurLayer.bounds[1].value - CurLayer.bounds[1].value;
+	this.relUpperLeftY = CurLayer.bounds[0].value - CurLayer.bounds[0].value;
+	this.relUpperCenterX = this.layerWidth / 2;
+	this.relUpperCenterY = CurLayer.bounds[0].value - CurLayer.bounds[0].value;
+	this.relUpperRightX = this.layerWidth;
+	this.relUpperRightY = CurLayer.bounds[0].value - CurLayer.bounds[0].value;
+	this.relMiddleLeftX = CurLayer.bounds[1].value - CurLayer.bounds[1].value;
+	this.relMiddleLeftY = this.layerHeight / 2;
+
+	// Center X
+	this.middleCenterX = this.layerWidth / 2 + CurLayer.bounds[0].value;
+	this.middleCenterX = this.middleCenterX - docWidth / 2;
+
+	// Center Y
+	this.middleCenterY = docHeight + ((this.layerHeight / 2) - (CurLayer.bounds[1].value) * (-1));
+	this.middleCenterY = this.middleCenterY - docHeight / 2;
+
+	this.relMiddleRightX = this.layerWidth;
+	this.relMiddleRightY = this.layerHeight / 2;
+	this.relLowerLeftX = CurLayer.bounds[1].value - CurLayer.bounds[1].value;
+	this.relLowerLeftY = this.layerHeight;
+	this.relLowerCenterX = this.layerWidth / 2;
+	this.relLowerCenterY = this.layerHeight / 2;
+	this.relLowerRightY = this.layerHeight;
+	this.relLowerRightX = this.layerWidth;
+	this.relLowerRightY = this.layerHeight;
+
+	return this;
+}
+
+//Рекурсивная обработка группы слоев
+function ExportLayersRecurcy(Group) {
+    var Footer = "";    //Теги после childs
+
+	for (var i = Group.layers.length - 1; i >= 0; i--) {
+		var CurLayer = Group.layers[i];
+		//Если группа, то повторно вызвать функцию
+		if (CurLayer.typename == "LayerSet") {
+            //Если группа активна
+            if (CurLayer.visible == true) {            
+                ExportLayersRecurcy(CurLayer);
+            }
+		} else {
+			if (CurLayer.visible == true) {
+				//Сформировать данные слоя
+				if (Footer == "") {
+                    if (Group != docRef) {
+                        exportBounds(Group.parent, CurLayer);
+                        CurLayer.name = "Main_" + CurLayer.name;
+                     } else {
+                        exportBounds(Group, CurLayer);
+                        CurLayer.name = "Main_" + CurLayer.name;
+                     }
+					//Если слой самый последный в группе, то теги после childs пока оставляем
+					str += TempStr1.toString() + "\n";
+					Footer = TempStr2;
+				} else {
+					exportBounds(Group, CurLayer);
+					//Иначе экспортируем обе части тегов
+					str += TempStr1.toString();
+					str += TempStr2.toString();
+				}				
+			}
+		}
+	}
+	//После обработки все слоев группы, записывает оставленные теги после childs
+	str += Footer.toString();	
+}
